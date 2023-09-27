@@ -1,4 +1,4 @@
-import MyComponent from './components/MyComponent';
+import MyComponent from './components/MyComponent/MyComponent';
 
 export default function App() {
   const data = [
