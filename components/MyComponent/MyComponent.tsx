@@ -12,8 +12,10 @@ import {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: '#333',
-    color: '#fafafa',
     textAlign: 'center'
+  },
+  buttonText: {
+    color: '#fafafa'
   }
 })
 
@@ -64,7 +66,7 @@ export const MyComponent = (props: MyComponentProps) => {
         onPress={handleClear}
         style={styles.button}
       >
-        <Text>Clear</Text>
+        <Text style={styles.buttonText}>Clear</Text>
       </TouchableOpacity>
       <FlatList
         data={dataSource}
