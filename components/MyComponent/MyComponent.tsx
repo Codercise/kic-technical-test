@@ -1,17 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Item, MyComponentProps } from "./MyComponent.types.ts"
 import {
   Text,
   View,
   TouchableOpacity,
   FlatList,
   TextInput,
+  StyleSheet,
 } from "react-native";
 
-const MyComponent = ({ data }) => {
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [dataSource, setDataSource] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const inputRef = useRef(null);
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: '#333',
+    textAlign: 'center'
+  },
+  buttonText: {
+    color: '#fafafa'
+  }
+})
+
+export const MyComponent = (props: MyComponentProps) => {
+  const data = props.data
+  const [selectedItems, setSelectedItems] = useState<Item[]>([]);
+  const [dataSource, setDataSource] = useState<Item[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     setDataSource(data);
@@ -19,16 +32,26 @@ const MyComponent = ({ data }) => {
 
   useEffect(() => {
     setTimeout(() => {
-      setDataSource(data.filter((item) => item.name.includes(searchTerm)));
+      setDataSource(data.filter((item: Item) => item.name.includes(searchTerm)));
     }, 1000);
   }, [searchTerm]);
 
-  const handleSelect = (item) => {
-    setSelectedItems((currentSelectedItems) => [...currentSelectedItems, item]);
+  const handleSelect = (item: Item) => {
+    setSelectedItems((currentSelectedItems) => {
+      const newSelectedItems = [...currentSelectedItems]
+      if (newSelectedItems.indexOf(item) > -1) {
+        newSelectedItems.splice(newSelectedItems.indexOf(item), 1)
+      } else {
+        newSelectedItems.push(item)
+      }
+      
+      return newSelectedItems
+    })
   };
 
   const handleClear = () => {
-    inputRef.current.clear();
+    setSearchTerm("")
+    inputRef?.current?.focus();
   };
 
   return (
@@ -36,16 +59,22 @@ const MyComponent = ({ data }) => {
       <TextInput
         ref={inputRef}
         onChangeText={setSearchTerm}
+        placeholder="Search..."
         value={searchTerm}
       />
-      <TouchableOpacity onPress={handleClear}>
-        <Text>Clear</Text>
+      <TouchableOpacity
+        onPress={handleClear}
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>Clear</Text>
       </TouchableOpacity>
       <FlatList
         data={dataSource}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item: Item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleSelect(item)}>
+          <TouchableOpacity
+            onPress={() => handleSelect(item)}
+          >
             <Text>{item.name}</Text>
             <Text>
               {selectedItems.includes(item) ? "Selected" : "Not selected"}
@@ -56,5 +85,3 @@ const MyComponent = ({ data }) => {
     </View>
   );
 };
-
-export default MyComponent;
